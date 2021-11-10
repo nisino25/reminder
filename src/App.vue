@@ -145,8 +145,8 @@ export default {
 
   data(){
     return{
-      clearLocal: true,
-      // clearLocal: false,
+      // clearLocal: true,
+      clearLocal: false,
       notNow: true,
       dataList: [],
       showingPage: 'main',
