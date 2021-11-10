@@ -215,12 +215,12 @@ export default {
 
       setTimeout(() =>
       this.reminderList[i].animation = true
-      , 2000); 
+      , 1650); 
       
 
       setTimeout(() =>
       this.reminderList[i].finished = true
-      , 2700); 
+      , 2350); 
 
 
       
@@ -304,6 +304,7 @@ body {
 
 
 /* ---------------------------------------------------------------- */
+/* timeoline  */
 .timeline {
   position: relative;
   width: 100%;
@@ -493,26 +494,6 @@ body {
 
 
 
-
-
-
-
-
-
-
-/* ------------------------------------------ */
-
-body{
-  /* overflow: hidden; */
-}
-/* 
-.topBar{
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 85%;
-} */
-
 /* ------------------------------------------------ */
 .task-card{
   padding: 10px;
@@ -624,7 +605,7 @@ body{
 
 .fadeout{
   transform: scale(0);
-  transition: .6s ease opacity,1.5s ease transform;
+  transition: .6s ease opacity,1s ease transform;
 }
 
 
