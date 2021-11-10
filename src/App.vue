@@ -1,11 +1,11 @@
 <template>
+
 <head>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 </head>
 
 <body >
-  
   <div class="wrapper">
     
     <header class="menu-bar" style="z-index: 4;">
@@ -18,19 +18,18 @@
           
     </header>
 
-    <div style="margin-top:80px; z-index: 3;" class="actual-content">
+    <div style="margin-top:65px; z-index: 3;" class="actual-content">
 
       <div class="main" v-if="showingPage == 'main'">
         <div style="">
           <div style="margin-left:10px">
-            <label for="">{{totalNum.finished}} task finished so far </label>
+            <label for="">{{totalNum.finished}} tasks completed so far </label>
             <br>
-            <label for="">{{totalNum.unfinished}} task left</label>
-            <button style="float:right" @click="addRandom(10)">Add random</button>
-            <!-- <button style="float:right" @click="addRandom(10)">A</button> -->
-            <button style="float:right; margin-right:10px" @click="undoTask()" >Undo</button>
-          </div>
+            <label for="">{{totalNum.unfinished}} tasks left</label>
+            <!-- <button style="float:right" @click="addRandom(5)">Add random</button> -->
+            <button style="" class="undo-button" @click="undoTask()" >Undo</button>
             <hr>
+          </div>
           
           <div class="timeline"  v-if="reminderList.length !==0 " >
             <div  v-for="(reminder, i) in reminderList " :key="i">
@@ -44,7 +43,7 @@
                 </i>
                 <div class="content content-left">
                   <h2 style="">{{reminder.task}}</h2>
-                  <p  :style="[checkDeadline(reminder.limit) ? 'color:red': 'color: Grey']">2021/11/7 13:45</p>
+                  <p  :style="[checkLimit(reminder.limit) ? 'color:Grey': 'color: Red']">{{reminder.limit}}</p>
                   
                 </div>
                 <!-- <i class="icon-right fa fa-home" style="border: 2px solid SteelBlue" @click="removeTask(i)">i</i> -->
@@ -59,30 +58,11 @@
         
 
       </div>
-      
-      <div class="input" v-if="showingPage == 'input'" style="width:90%; margin-left:5%;">
-       <h1>input</h1> 
-       <form action="" method="post">
-            <label for="field1"><span>Task name <span class="required">*</span></span><input type="number" class="input-field" name="field1" v-model="sessionGoal" /></label>
-            <label for="field1"><span>Daily Goal <span class="required">*</span></span><input type="number" class="input-field" name="field1" v-model="dailyGoal" /></label>
-            <label for="field1"><span>Weekly Goal <span class="required">*</span></span><input type="number" class="input-field" name="field1" v-model="weeklyGoal" /></label>
-            <label for="field1"><span>Total Goal<span class="required">*</span></span><input type="number" class="input-field" name="field1" v-model="totalGoal" /></label>
-
-            <hr>
-            <label for="field1"><span @click="console.log('hey')">Upload data<span class="required">*</span></span><input type="number" class="input-field" name="field1" v-model="totalGoal" /></label>
-           
-
-            <!-- <button>Upload my data to cloud</button> -->
-
-            <!-- <button @click="addRandomData(10)">get 5ksolves</button> -->
-            <!-- <label><span > </span><input class="menu-btn" style="marginTop:5%"  type="submit" value="Update" /></label> -->
-          </form>
-      </div>
 
     </div> 
 
     <transition name="fade" >
-      <div class="modal-overlay fade-in " v-if="showModal"  @click="showModal = false" :style="{ height: pageHeight}">
+      <!-- <div class="modal-overlay fade-in " v-if="showModal"  @click="showModal = false" :style="{ height: pageHeight}">
         <div class="modal"   >
           <h1>Lorem Ipsum</h1>
           <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem provident explicabo accusamus laudantium voluptatum nobis sed nesciunt neque possimus molestiae?</p>
@@ -90,25 +70,83 @@
             Close Modal
           </button>
         </div>
+      </div> -->
+      <div class='modal-overlay fade-in' v-if="showModal" :style="{ height: pageHeight}">
+        <div class="modal">
+
+          <div>
+            <form onsubmit="event.preventDefault()">
+              <label for="fname">Task Title</label>
+              <input type="text" placeholder="Task Title.." v-model="taskTitle">
+
+              <label for="lname">Date</label><br>
+              <input type="date" id="start" name="trip-start"
+              v-model="selectedDate">
+
+              <br><br>
+              <label for="Repad" style="">Repeating</label><br>
+
+
+              &nbsp;<input type="radio" id="one" value="once" v-model="radioPick">
+              <label for="once"> Once</label>
+
+              &nbsp;<input type="radio" id="two" value="everyday" v-model="radioPick">
+              <label for="two"> Everyday</label>
+
+              <button style="float:right; margin-right:0px; font-size:85%" @click="showMoreOptions 
+              = true" v-if="!showMoreOptions">more options </button>
+              <button style="float:right; margin-right:0px; font-size:85%" @click="showMoreOptions = false" v-else>close </button>
+
+              <br>
+
+              <div v-if="showMoreOptions">
+                &nbsp;<input type="radio" >
+                <label for="once"> Weekly</label>
+
+                &nbsp;<input type="radio">
+                <label for="two"> Monthly</label>
+                <br>
+
+                &nbsp;<input type="radio" >
+                <label for="once"> Biweekly</label>
+
+                &nbsp;<input type="radio">
+                <label for="two"> Yearly</label>
+                <br>
+
+                &nbsp;<input type="radio" >
+                <label for="once"> Weekdays</label>
+
+                &nbsp;<input type="radio">
+                <label for="two"> Weekend</label>
+              </div>
+              
+              <button @click="createTask()" class="submit" >Create</button>
+              <button @click="closingModal()" class="cancel" >Cancel</button>
+
+            </form>
+          </div>
+
+        </div>
+        
       </div>
+
+      
     </transition>
-
     
-
   </div>
 </body>
   
 </template>
 
 <script>
-
 export default {
   name: 'App',
 
   data(){
     return{
-      // clearLocal: true,
-      clearLocal: false,
+      clearLocal: true,
+      // clearLocal: false,
       notNow: true,
       dataList: [],
       showingPage: 'main',
@@ -129,9 +167,13 @@ export default {
       showModal: false,
       pageHeight: undefined,
 
+      taskTitle: '',
+      selectedDate: undefined,
+      radioPick: 'once',
+      showMoreOptions: false,
+
     }
   },
-
   mounted(){
     if(localStorage.firstTime && !this.clearLocal){
       console.log('found it')
@@ -152,27 +194,49 @@ export default {
     this.current.date = dateObj.getDate()
     this.current.yoobi= this.yoobiList[dateObj.getDay()]
     this.current.display = this.current.year + '/' + this.current.month + '/' + this.current.date + '/' + this.current.yoobi
-    
+
+    this.selectedDate = this.current.year + '-' +this.current.month + '-' + this.current.date     
     this.getPageHight();
+    // console.log(this.checkLimit('2021-11-10'))
 
   },
   created(){
-    
+    // this.checkLimit('2021-10-2')
+    // console.log(this.checkLimit('2021-10-2'))
   },
   methods: {
+    createTask(){
+      if(this.taskTitle == ''){
+        alert('Task title cannot be empty')
+        return
+      }
+      let reminder = {}
+      reminder = {task: this.taskTitle, finished: false, created: Date.now(), limit: this.selectedDate, repeating: this.radioPick, animation: false, checkmark: false,fadein: true, }
+      this.reminderList.push(reminder)
+
+      this.closingModal()
+
+    },
+
     startInputting(){
       this.getPageHight();
       this.pageHeight = document.querySelector('HTML').scrollHeight + 'px'
-      console.log(this.pageHeight)
+      // console.log(this.pageHeight)
       this.showModal = true;
     },
-
     getPageHight(){
       this.pageHeight = document.querySelector('HTML').scrollHeight + 'px'
     },
 
-    // -------------------------------------
+    closingModal(){
+      this.showModal = false
+      this.taskTitle = ''
+      this.radioPick = 'once'
+      this.showMoreOptions = false
+      this.selectedDate = this.current.year + '-' +this.current.month + '-' + this.current.date;
+    },
 
+    // -------------------------------------
 
 
     addRandom(num){
@@ -194,7 +258,7 @@ export default {
           randomCount++
         }
         // console.log(theString)
-        reminder = {task: theString, finished: false, created: Date.now(), limit: Date.now(), animation: false, checkmark: false,fadein: true,}
+        reminder = {task: theString, finished: false, created: Date.now(), limit: this.selectedDate, repeating: this.radioPick, animation: false, checkmark: false,fadein: true,}
         this.reminderList.push(reminder)
 
          
@@ -242,6 +306,34 @@ export default {
 
         // this.reminderList.push(this.undoList[lastIndex])
       }
+    },
+    checkLimit(theString){
+
+      // console.log(theString)
+      let year =  Math.floor(theString.split('-')[0])
+      let month = Math.floor(theString.split('-')[1])
+      let date = Math.floor(theString.split('-')[2])
+      // console.log(this.current.year,this.current.month,this.current.date)
+
+      if(year < this.current.year  ){
+        return false
+      }
+      // console.log('pass year check')
+
+      if(month < this.current.month ){
+        return false
+      }
+      // console.log('pass month check')
+
+      if(date <= this.current.date ){
+        return false
+      }
+      // console.log('pass date check')
+      // check year first, month, date
+      // give flag only when date is the identical
+      // this.selectedDate = this.current.year + '-' +this.current.month + '-' + this.current.date  
+
+      return true
     },
 
     // -------------------------------------
@@ -298,7 +390,8 @@ export default {
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background: #ffffff;
+  background: #f2f2f2;
+
   height: 100vh;
 }
 
@@ -513,7 +606,7 @@ body {
   padding-top: 10px;
   /* padding-left: 10px; */
   width: 100%;
-  height: 50px;
+  height: 55px;
   color:white;
 }
 .menu-left-btn{
@@ -632,7 +725,7 @@ body {
   
   width: 85%;
   max-width: 400px;
-  background-color: #FFF;
+  background-color: #f2f2f2;
   border-radius: 16px;
   
   padding: 25px;
@@ -657,7 +750,7 @@ body {
 	animation-name: fadeInOpacity;
 	animation-iteration-count: 1;
 	animation-timing-function: ease-in;
-	animation-duration: .5s;
+	animation-duration: .4s;
 }
 @keyframes fadeInOpacity {
 	0% {
@@ -677,4 +770,58 @@ body {
 }
 
 
+
+/* ----------------------------------------------------------------------------- */
+input[type=text], select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.modal  .submit {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 20px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal  .cancel {
+  width: 100%;
+  background-color: firebrick;
+  color: white;
+  padding: 14px 20px;
+  margin: 5px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.undo-button{
+  float:right;
+  margin-right:15px;
+  width: auto;
+  background-color: grey;
+  color: white;
+  padding: 4px 5px;
+  /* margin: 5px 0; */
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+
+
+
+
+
 </style>
+
