@@ -323,17 +323,23 @@ export default {
       let date = Math.floor(theString.split('-')[2])
       // console.log(this.current.year,this.current.month,this.current.date)
 
-      if(year < this.current.year  ){
+      if(year > this.current.year  ){
+        return true
+      }else if(year < this.current.year){
         return false
       }
       // console.log('pass year check')
 
-      if(month < this.current.month ){
+      if(month > this.current.month ){
+        return true
+      }else if(month < this.current.month){
         return false
       }
       // console.log('pass month check')
 
-      if(date <= this.current.date ){
+      if(date > this.current.date ){
+        return true
+      }else {
         return false
       }
       // console.log('pass date check')
@@ -341,7 +347,6 @@ export default {
       // give flag only when date is the identical
       // this.selectedDate = this.current.year + '-' +this.current.month + '-' + this.current.date  
 
-      return true
     },
 
     // -------------------------------------
