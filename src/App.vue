@@ -22,10 +22,11 @@
 
       <div class="main" v-if="showingPage == 'main'">
         <div style="">
+
           <div style="margin-left:10px">
-            <label for="">{{totalNum.finished}} tasks completed so far </label>
+            <label for=""><span style="color: #006a4e">{{totalNum.finished}}</span> tasks completed so far </label>
             <br>
-            <label for="">{{totalNum.unfinished}} tasks left</label>
+            <label for=""><span style="color: #b22222">{{totalNum.unfinished}}</span> tasks left</label>
             <!-- <button style="float:right" @click="addRandom(5)">Add random</button> -->
             <button style="" class="undo-button" @click="undoTask()" >Undo</button>
             <hr>
@@ -55,7 +56,6 @@
 
         </div>
 
-        
 
       </div>
 
@@ -198,6 +198,7 @@ export default {
     this.selectedDate = this.current.year + '-' +this.current.month + '-' + this.current.date     
     this.getPageHight();
     // console.log(this.checkLimit('2021-11-10'))
+    // this.addRandom(15)
 
   },
   created(){
@@ -274,17 +275,24 @@ export default {
     },
 
     removeTask(i){
+      // if(this.reminderList[i].repeating !== 'once'){
+
+      //   return
+      // }
+
       this.reminderList[i].checkmark = true
       this.undoList.push(i)
 
       setTimeout(() =>
       this.reminderList[i].animation = true
-      , 1650); 
+      , 1350); 
       
 
       setTimeout(() =>
       this.reminderList[i].finished = true
-      , 2350); 
+      , 1800); 
+
+      
 
 
       
@@ -402,7 +410,7 @@ body {
   position: relative;
   width: 100%;
   /* max-width: 1140px; */
-  margin: 0 auto;
+  margin: -25px auto;
   padding: 15px 0;
   transition: all 0.5s ease;
 }
@@ -419,10 +427,12 @@ body {
 
 
 .container {
-  padding: 8px 15px;
+  /* padding here  */
+  padding: 5px 15px;
   position: relative;
   background: inherit;
   width: 50%;
+  
 }
 .container.left {
   left: 0;
@@ -449,29 +459,16 @@ body {
   background: SteelBlue ;
   z-index: 1;
 }
-.container .date {
-  position: absolute;
-  display: inline-block;
-  top: calc(50% - 8px);
-  text-align: center;
-  font-size: 14px;
-  font-weight: bold;
-  color: SteelBlue ;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  z-index: 1;
-}
-.container.left .date {
-  right: -200px;
-}
+
 .container .icon {
+  /* icon height hsouldb e don here  */
   position: absolute;
   display: inline-block;
   width: 30px;
   height: 30px;
   padding: 9px 0;
   /* top: calc(50% - 20px); */
-  top: 24px;
+  top: 16.5px;
   /* background: #F6D155; */
   /* border: 2px solid #009688; */
   /* SteelBlue */
@@ -491,7 +488,7 @@ body {
   height: 25px;
   padding: 9px 0;
   /* top: calc(50% - 20px); */
-  top: 24px;
+  /* top: 100px; */
   /* background: #F6D155; */
   /* border: 2px solid #009688; */
   /* SteelBlue */
@@ -512,7 +509,6 @@ body {
 }
 .container .content {
   padding: 30px 90px 30px 30px;
-  
   position: relative;
   border-radius: 0 500px 500px 0;
 }
@@ -524,15 +520,17 @@ body {
   border-radius: 500px 0 0 500px;
 } */
 .container .content h2 {
-  margin: -10px 0 4px 0;
-  font-size: 18px;
+  margin: -12px 0 0px 0;
+  /* font-size: 18px; */
+  font-size: 95%;
   font-weight: normal;
   color: black
 }
 .container .content p {
   margin: 0;
-  margin-bottom: -15px;
-  font-size: 16px;
+  margin-bottom: -18px;
+  /* font-size: 16px; */
+  font-size: 80%;
   line-height: 22px;
   color: #000000;
 }
