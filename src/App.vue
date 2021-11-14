@@ -468,7 +468,8 @@ body {
   height: 30px;
   padding: 9px 0;
   /* top: calc(50% - 20px); */
-  top: 16.5px;
+  /* top: 16.5px; */
+  top: 28%;
   /* background: #F6D155; */
   /* border: 2px solid #009688; */
   /* SteelBlue */
@@ -524,7 +525,9 @@ body {
   /* font-size: 18px; */
   font-size: 95%;
   font-weight: normal;
-  color: black
+  color: black;
+  max-width:100px;
+  word-wrap:break-word;
 }
 .container .content p {
   margin: 0;
