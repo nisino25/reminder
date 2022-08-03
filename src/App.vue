@@ -215,7 +215,7 @@ export default {
       reminder = {task: this.taskTitle, finished: false, created: Date.now(), limit: this.selectedDate, repeating: this.radioPick, animation: false, checkmark: false,fadein: true, }
       this.reminderList.push(reminder)
 
-      this.closingModal()
+      this.closingModal() 
 
     },
 
