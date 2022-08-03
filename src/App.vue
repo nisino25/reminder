@@ -77,7 +77,7 @@
           <div>
             <form onsubmit="event.preventDefault()">
               <label for="fname">Task Title</label>
-              <input type="text" placeholder="Task Title.." v-model="taskTitle">
+              <input type="text" placeholder="Task Title.." v-model="taskTitle" @keyup.enter="createTask()">
 
               <label for="lname">Date</label><br>
               <input type="date" id="start" name="trip-start"
@@ -93,13 +93,13 @@
               &nbsp;<input type="radio" id="two" value="everyday" v-model="radioPick">
               <label for="two"> Everyday</label>
 
-              <button style="float:right; margin-right:0px; font-size:85%" @click="showMoreOptions 
+              <!-- <button style="float:right; margin-right:0px; font-size:85%" @click="showMoreOptions 
               = true" v-if="!showMoreOptions">more options </button>
-              <button style="float:right; margin-right:0px; font-size:85%" @click="showMoreOptions = false" v-else>close </button>
+              <button style="float:right; margin-right:0px; font-size:85%" @click="showMoreOptions = false" v-else>close </button> -->
 
               <br>
 
-              <div v-if="showMoreOptions">
+              <!-- <div v-if="showMoreOptions">
                 &nbsp;<input type="radio" >
                 <label for="once"> Weekly</label>
 
@@ -119,7 +119,7 @@
 
                 &nbsp;<input type="radio">
                 <label for="two"> Weekend</label>
-              </div>
+              </div> -->
               
               <button @click="createTask()" class="submit" >Create</button>
               <button @click="closingModal()" class="cancel" >Cancel</button>
