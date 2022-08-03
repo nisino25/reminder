@@ -473,12 +473,10 @@ body {
   width: 30px;
   height: 30px;
   padding: 9px 0;
-  /* top: calc(50% - 20px); */
-  /* top: 16.5px; */
-  top: 26%;
-  /* background: #F6D155; */
-  /* border: 2px solid #009688; */
-  /* SteelBlue */
+  /* top: 26%; */
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
   border: 2px solid SteelBlue ;
   
   border-radius: 40px;
