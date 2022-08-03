@@ -207,10 +207,10 @@ export default {
   },
   methods: {
     createTask(){
-      if(this.taskTitle == ''){
-        alert('Task title cannot be empty')
-        return
-      }
+      // if(this.taskTitle == ''){
+      //   alert('Task title cannot be empty')
+      //   return
+      // }
       let reminder = {}
       reminder = {task: this.taskTitle, finished: false, created: Date.now(), limit: this.selectedDate, repeating: this.radioPick, animation: false, checkmark: false,fadein: true, }
       this.reminderList.push(reminder)
