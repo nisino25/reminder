@@ -24,11 +24,14 @@
         <div style="">
 
           <div style="margin-left:10px">
+            <label ><span style="color: #006a4e"></span> Welcome back {{username}}! </label>
+            <br>
             <label for=""><span style="color: #006a4e">{{totalNum.finished}}</span> tasks completed so far </label>
             <br>
             <label for=""><span style="color: #b22222">{{totalNum.unfinished}}</span> tasks left</label>
             <!-- <button style="float:right" @click="addRandom(5)">Add random</button> -->
-            <button style="" class="undo-button" @click="undoTask()" >Undo</button>
+            <button  class="undo-button" @click="undoTask()" >Undo</button>
+            <button style="background-color: crimson;" class="undo-button" @click="logout()" >Logout</button>
             <hr>
           </div>
           
@@ -62,16 +65,9 @@
     </div> 
 
     <transition name="fade" >
-      <!-- <div class="modal-overlay fade-in " v-if="showModal"  @click="showModal = false" :style="{ height: pageHeight}">
-        <div class="modal"   >
-          <h1>Lorem Ipsum</h1>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem provident explicabo accusamus laudantium voluptatum nobis sed nesciunt neque possimus molestiae?</p>
-          <button class="button" @click="showModal = false">
-            Close Modal
-          </button>
-        </div>
-      </div> -->
-      <div class='modal-overlay fade-in' v-if="showModal" :style="{ height: pageHeight}">
+      
+
+      <div class='modal-overlay fade-in' v-if="showModal && ready" :style="{ height: pageHeight}">
         <div class="modal">
 
           <div>
@@ -133,13 +129,41 @@
 
       
     </transition>
+
+    <transition name="fade" v-if="showModal && !ready">
+      
+
+      <div class='modal-overlay fade-in' :style="{ height: pageHeight}">
+        <div class="modal">
+
+          <div>
+            <form onsubmit="event.preventDefault()">
+              <label for="fname">Type your username</label>
+              <input type="text" placeholder="Username.." v-model="username" @keyup.enter="createTask()">
+
+              <br>
+              
+              <button @click="login()" class="submit" >Login/Signup</button>
+
+            </form>
+          </div>
+
+        </div>
+        
+      </div>
+
+      
+    </transition>
     
   </div>
+
 </body>
   
 </template>
 
 <script>
+import db from './firebase.js';
+
 export default {
   name: 'App',
 
@@ -172,12 +196,17 @@ export default {
       radioPick: 'once',
       showMoreOptions: false,
 
+      username: '',
+      ready: true,
+      
+
     }
   },
   mounted(){
     if(localStorage.firstTime && !this.clearLocal){
+      // this.test()
       console.log('found it')
-      this.reminderList = JSON.parse(localStorage.reminderList); 
+      // this.reminderList = JSON.parse(localStorage.reminderList); 
     }else{
       console.log('welcome and now creating') 
       let flag = false
@@ -202,6 +231,12 @@ export default {
 
   },
   created(){
+    if(localStorage.remidnerUsername){
+      this.username= localStorage.remidnerUsername
+    }else{
+      this.showModal = true
+      this.ready = false
+    }
     // this.checkLimit('2021-10-2')
     // console.log(this.checkLimit('2021-10-2'))
   },
@@ -351,6 +386,66 @@ export default {
     },
 
     // -------------------------------------
+
+    test(){
+      if(!this.username) return
+      var docRef = db.collection('to-do').doc(`lists`);
+
+      docRef.get().then((doc) => {
+          if (doc.exists) {
+            console.log(typeof doc.data().users)
+            if(`${this.username}` in doc.data().users){
+              console.log('data eists')
+              this.reminderList =doc.data().users[this.username]
+            }else{
+              console.log('welcome new users')
+              const ref = db.collection('to-do')
+              let updatingTarget = `users.${this.username}`
+              ref.doc(`lists`).update({
+                [updatingTarget]: this.reminderList
+
+              })
+            }
+            return
+          } 
+      }).catch((error) => {
+          console.log("Error getting document:", error);
+      });
+    },
+    
+    updatingData(){
+      if(!this.username) return
+      console.log('uploading data to firestore')
+
+      let updatingTarget = `users.${this.username}`
+
+      const ref = db.collection('to-do')
+      ref.doc(`lists`).update({
+
+       [updatingTarget]: this.reminderList
+
+      })
+
+    },
+    login(){
+      if(!this.username) return
+      localStorage.remidnerUsername = this.username
+      this.showModal = false
+      this.ready = true
+      this.test()
+    },
+    logout(){
+      let r= confirm(`Would you like to logout `);
+      if(!r){
+        return;
+      }
+      this.username = undefined
+      localStorage.clear()
+      this.showModal = true
+      this.ready = false
+      this.reminderList = []
+
+    },
       
     
   },
@@ -386,6 +481,7 @@ export default {
     reminderList: {
       deep:true,
       handler() {
+        this.updatingData()
         localStorage.reminderList = JSON.stringify(this.reminderList); 
       }
     },
