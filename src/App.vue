@@ -203,18 +203,18 @@ export default {
     }
   },
   mounted(){
-    if(localStorage.firstTime && !this.clearLocal){
-      // this.test()
-      console.log('found it')
-      // this.reminderList = JSON.parse(localStorage.reminderList); 
-    }else{
-      console.log('welcome and now creating') 
-      let flag = false
-      localStorage.firstTime = JSON.stringify(flag); 
+    // if(localStorage.firstTime && !this.clearLocal){
+    //   // this.test()
+    //   console.log('found it')
+    //   // this.reminderList = JSON.parse(localStorage.reminderList); 
+    // }else{
+    //   console.log('welcome and now creating') 
+    //   let flag = false
+    //   localStorage.firstTime = JSON.stringify(flag); 
       
-      // this.createCalendar();
-      localStorage.reminderList = JSON.stringify(this.reminderList); 
-    }
+    //   // this.createCalendar();
+    //   localStorage.reminderList = JSON.stringify(this.reminderList); 
+    // }
 
     let dateObj = new Date();
     this.current.year = dateObj.getFullYear()
@@ -233,6 +233,7 @@ export default {
   created(){
     if(localStorage.remidnerUsername){
       this.username= localStorage.remidnerUsername
+      this.test()
     }else{
       this.showModal = true
       this.ready = false
