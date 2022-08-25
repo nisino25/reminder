@@ -477,8 +477,16 @@ export default {
           if (doc.exists) {
             // console.log(typeof doc.data().users)
             // if(`${this.username}` in doc.data().users){
-              console.log('data eists')
-              this.reminderList =doc.data().list
+            console.log('data eists')
+            this.reminderList = doc.data().list
+
+            for(let i in this.reminderList){
+              // console.log('checking')
+              if(this.reminderList[i].checkmark){
+                this.reminderList[i].finished = true
+              }
+            }
+            
             // }else{
             //   console.log('welcome new users')
             //   const ref = db.collection('to-do')
