@@ -26,7 +26,7 @@
           <div style="margin-left:10px">
             <label ><span style="color: #006a4e"></span> Welcome back {{username}}!  </label>
             <br>
-            <label for=""><span style="color: #006a4e">{{totalNum.finished}}</span> tasks completed so far </label>
+            <label for=""><span style="color: #006a4e">{{totalNum.finished}}</span> tasks completed</label>
             <br>
             <label for=""><span style="color: #b22222">{{totalNum.unfinished}}</span> tasks left</label>
             <!-- <button style="float:right" @click="addRandom(5)">Add random</button> -->
@@ -485,7 +485,7 @@ export default {
               if(this.reminderList[i].checkmark){
                 this.reminderList[i].finished = true
               }
-            }
+            } 
             
             // }else{
             //   console.log('welcome new users')
