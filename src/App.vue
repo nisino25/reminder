@@ -52,7 +52,6 @@
                   <p  :style="[checkLimit(reminder.limit) ? 'color:Grey': 'color: Red']">{{reminder.limit}}</p>
                   
                 </div>
-                <!-- <i class="icon-right fa fa-home" style="border: 2px solid SteelBlue" @click="removeTask(i)">i</i> -->
                 
             </div>
 
@@ -235,8 +234,9 @@ export default {
       this.showModal = true
       this.ready = false
     }
-    // this.checkLimit('2021-10-2')
-    // console.log(this.checkLimit('2021-10-2'))
+
+    if(localStorage.reminderSort) this.sort = localStorage.reminderSort
+    
   },
   methods: {
     createTask(){
@@ -454,16 +454,16 @@ export default {
     
     getList(){
       if(this.sort == 'oldToNew'){
-        if(!this.hasFlipped) return this.reminderList
-        return this.reminderList.reverse()
+        return this.reminderList
       }else{
-        let list = this.reminderList
-        let newList = list
-        this.hasFlipped = true
-        return newList.reverse()
+        var newArr = [];
+        for (var i = 0, j = this.reminderList.length - 1; i < this.reminderList.length; i++, j--) {      
+            newArr[i] = this.reminderList[j];
+        }   
+        return newArr;
       }
     },
-    // -----------------------------------------------------------
+    // ---------------------------------------------------------------
 
     test(){
       if(!this.username) return
@@ -587,6 +587,9 @@ export default {
     },
   },
   watch:{
+    sort(){
+      localStorage.reminderSort = this.sort 
+    },
     // reminderList: {
     //   deep:true,
     //   handler() {
