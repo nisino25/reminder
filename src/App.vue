@@ -24,7 +24,7 @@
         <div style="">
 
           <div style="margin-left:10px">
-            <label ><span style="color: #006a4e"></span> Welcome back {{username}}! </label>
+            <label ><span style="color: #006a4e"></span> Welcome back {{username}}!  </label>
             <br>
             <label for=""><span style="color: #006a4e">{{totalNum.finished}}</span> tasks completed so far </label>
             <br>
@@ -32,17 +32,19 @@
             <!-- <button style="float:right" @click="addRandom(5)">Add random</button> -->
             <button  class="undo-button" @click="undoTask()" >Undo</button>
             <button style="background-color: crimson;" class="undo-button" @click="logout()" >Logout</button>
+
+            <button style="background-color: MediumSeaGreen;" class="undo-button" @click="changeSorting()" >sort</button>
             <hr>
           </div>
           
-          <div class="timeline"  v-if="reminderList.length !==0 " >
-            <div  v-for="(reminder, i) in reminderList " :key="i">
+          <div class="timeline"  v-if="tempList.length !==0 " >
+            <div  v-for="(reminder, i) in tempList " :key="i">
               
             <div class="container left " v-if="!reminder.finished" :class="[(reminder.animation ? 'fadeout ': ''),(reminder.fadein ? 'w3-animate-zoom': '')] " style="opacity:1"  >
                 <i class="icon fa fa-home" style="border: 2px solid SteelBlue;" @click="removeTask(i)" >
                   <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" v-if="reminder.checkmark">
-            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
-            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
                   </svg>
                 </i>
                 <div class="content content-left">
@@ -52,7 +54,7 @@
                 </div>
                 <!-- <i class="icon-right fa fa-home" style="border: 2px solid SteelBlue" @click="removeTask(i)">i</i> -->
                 
-              </div>
+            </div>
 
             </div>
           </div>
@@ -63,6 +65,8 @@
       </div>
 
     </div> 
+
+
 
     <transition name="fade" >
       
@@ -198,23 +202,16 @@ export default {
 
       username: '',
       ready: true,
+
+      sort: 'oldToNew', 
+      hasFlipped: false,
+      startedListning: false,
       
 
     }
   },
   mounted(){
-    // if(localStorage.firstTime && !this.clearLocal){
-    //   // this.test()
-    //   console.log('found it')
-    //   // this.reminderList = JSON.parse(localStorage.reminderList); 
-    // }else{
-    //   console.log('welcome and now creating') 
-    //   let flag = false
-    //   localStorage.firstTime = JSON.stringify(flag); 
-      
-    //   // this.createCalendar();
-    //   localStorage.reminderList = JSON.stringify(this.reminderList); 
-    // }
+    console.clear()
 
     let dateObj = new Date();
     this.current.year = dateObj.getFullYear()
@@ -244,15 +241,65 @@ export default {
   methods: {
     createTask(){
       // console.log('adding new one')
-      if(this.taskTitle == ''){
-        // alert('Task title cannot be empty')
-        return
-      }
+      if(this.taskTitle == '') return
+      
+
+
       let reminder = {}
       reminder = {task: this.taskTitle, finished: false, created: Date.now(), limit: this.selectedDate, repeating: this.radioPick, animation: false, checkmark: false,fadein: true, }
+
+      let str = this.taskTitle
+      let target
+      if(str.includes('@')){
+        target =str.substring(str.indexOf('@') + 1)
+        // target = target.substring(0, target.indexOf(' '));
+        console.log(target)
+
+        if(target == this.username) return
+
+        
+
+        var docRef = db.collection('to-do').doc(`${target}`);
+
+        docRef.get().then((doc) => {
+            if (doc.exists) {
+              // added to someone
+              let list = doc.data().list
+              reminder.from = this.username
+              list.push(reminder)
+
+              const ref = db.collection('to-do')
+              ref.doc(`${target}`).update({
+                list: list
+              })
+
+              return
+            } else{
+              alert(`${target} does not exist`)
+              return
+      
+            }
+        }).catch((error) => {
+          console.log("Error getting document:", error);
+        });
+
+        this.closingModal() 
+        this.updatingData()
+
+        return
+
+
+      }
+
+      
+
+
+
+
       this.reminderList.push(reminder)
 
       this.closingModal() 
+      this.updatingData()
 
     },
 
@@ -312,22 +359,30 @@ export default {
     },
 
     removeTask(i){
+      
       // if(this.reminderList[i].repeating !== 'once'){
 
       //   return
       // }
 
-      this.reminderList[i].checkmark = true
+      this.tempList[i].checkmark = true
       this.undoList.push(i)
 
+      
+
       setTimeout(() =>
-      this.reminderList[i].animation = true
+      this.tempList[i].animation = true
       , 1350); 
       
 
       setTimeout(() =>
-      this.reminderList[i].finished = true
+      this.tempList[i].finished = true
       , 1800); 
+
+      setTimeout(() =>
+      this.updatingData()
+      , 1850); 
+
 
       
 
@@ -336,6 +391,7 @@ export default {
       // console.log(this.reminderList[i])
     },
     undoTask(){
+      this.updatingData()
       if(this.undoList.length > 0){
         let lastIndex = this.undoList.length -1
         let theIndex = this.undoList[lastIndex]
@@ -386,44 +442,75 @@ export default {
 
     },
 
-    // -------------------------------------
+    changeSorting(){
+      // console.log(`statet: ${this.sort}`)
+
+      if(this.sort == 'oldToNew'){
+        this.sort = 'newToOld'
+      }else if(this.sort == 'newToOld'){
+        this.sort = 'oldToNew'
+      }
+    },
+    
+    getList(){
+      if(this.sort == 'oldToNew'){
+        if(!this.hasFlipped) return this.reminderList
+        return this.reminderList.reverse()
+      }else{
+        let list = this.reminderList
+        let newList = list
+        this.hasFlipped = true
+        return newList.reverse()
+      }
+    },
+    // -----------------------------------------------------------
 
     test(){
       if(!this.username) return
-      var docRef = db.collection('to-do').doc(`lists`);
+
+      if(!this.startedListning) this.ReciveTheData()
+      this.startedListning = true
+
+      var docRef = db.collection('to-do').doc(`${this.username}`);
 
       docRef.get().then((doc) => {
           if (doc.exists) {
-            console.log(typeof doc.data().users)
-            if(`${this.username}` in doc.data().users){
+            // console.log(typeof doc.data().users)
+            // if(`${this.username}` in doc.data().users){
               console.log('data eists')
-              this.reminderList =doc.data().users[this.username]
-            }else{
-              console.log('welcome new users')
-              const ref = db.collection('to-do')
-              let updatingTarget = `users.${this.username}`
-              ref.doc(`lists`).update({
-                [updatingTarget]: this.reminderList
+              this.reminderList =doc.data().list
+            // }else{
+            //   console.log('welcome new users')
+            //   const ref = db.collection('to-do')
+            //   let updatingTarget = `users.${this.username}`
+            //   ref.doc(`lists`).update({
+            //     [updatingTarget]: this.reminderList
 
-              })
-            }
+            //   })
+            // }
             return
-          } 
+          } else{
+            console.log('welcome new users')
+            const ref = db.collection('to-do')
+            // let updatingTarget = `users.${this.username}`
+            ref.doc(`${this.username}`).set({
+              list: this.reminderList
+            })
+          }
       }).catch((error) => {
-          console.log("Error getting document:", error);
+        console.log("Error getting document:", error);
       });
-    },
-    
+    }, 
     updatingData(){
       if(!this.username) return
       console.log('uploading data to firestore')
 
-      let updatingTarget = `users.${this.username}`
+      // let updatingTarget = `users.${this.username}`
 
       const ref = db.collection('to-do')
-      ref.doc(`lists`).update({
+      ref.doc(`${this.username}`).update({
 
-       [updatingTarget]: this.reminderList
+       list: this.reminderList
 
       })
 
@@ -447,6 +534,24 @@ export default {
       this.reminderList = []
 
     },
+
+    ReciveTheData(){
+      
+      
+      db.collection("to-do").doc(`${this.username}`)
+      .onSnapshot((doc) => {
+        console.log('recieving data')
+        
+        this.reminderList = doc.data().list
+          
+        
+        return 
+      }
+      )
+    },
+
+
+
       
     
   },
@@ -477,15 +582,18 @@ export default {
       return list
       // list.undefined = 
     },
+    tempList: function(){
+      return this.getList()
+    },
   },
   watch:{
-    reminderList: {
-      deep:true,
-      handler() {
-        this.updatingData()
-        localStorage.reminderList = JSON.stringify(this.reminderList); 
-      }
-    },
+    // reminderList: {
+    //   deep:true,
+    //   handler() {
+        
+    //     localStorage.reminderList = JSON.stringify(this.reminderList); 
+    //   }
+    // },
   }
 
 }
